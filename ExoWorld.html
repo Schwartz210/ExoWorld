@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+    <script src="datacrunch.js"></script>
+    <script src="celestial.js"></script>
+    <script src="solar.js"></script>
+</head>
+
+<style>
+    div.pane {
+        border-style: solid;
+        border: 1px solid black;
+        background-color: #acadad;
+    }
+    canvas {
+        margin-left: auto;
+        margin-right: auto;
+        display: block;
+    }
+    dl {
+        margin: 0;
+    }
+
+</style>
+<body>
+    <div ng-app="myApp" ng-controller="myCtrl" class="container">
+        <div class="pane" ng-repeat="star in content" id={{star.name}}>
+            <button class="btn btn-secondary btn-lg btn-block" ng-if="star.expanded" ng-click="closePane(star)"><span>{{star.name}}</span></button>
+            <button class="btn btn-secondary btn-lg btn-block" ng-if="!star.expanded" ng-click="openPane(star)"><span>{{star.name}}</span></button>
+            <div class="container">
+                <dl class="row">
+                    <dt class="col-sm-3">Stellar Classification</dt>
+                    <dd class="col-sm-9">{{star.spectral[0]}}</dd>
+                </dl>
+                <dl class="row">
+                    <dt class="col-sm-3">Planets</dt>
+                    <dd class="col-sm-9">{{star.celestialObjects.length}}</dd>
+                </dl>
+            </div>
+            <canvas id="canvas" ng-if="star.expanded" width="1000" height="700"></canvas>
+        </div>
+    </div>
+    <script>
+        var app = angular.module('myApp', []);
+            app.controller('myCtrl', function($scope, $http) {
+                $http.get("https://exoplanetarchive.ipac.caltech.edu/cgi-bin/nstedAPI/nph-nstedAPI?table=exoplanets&format=json&select=pl_hostname,pl_name,pl_orbeccen,pl_radj,pl_orbsmax,st_spstr")
+                .then(function(response) {
+                    $scope.content = planetsToStars(response.data);
+                }, function(response) {
+                    $scope.content = "Something went wrong";
+                });
+                $scope.currentStar = null;
+                $scope.closePane = function(star) {
+                    star.expanded = false;
+                    terminate();
+                }
+                $scope.openPane = function(star){
+                    if ($scope.currentStar != null){
+                        $scope.closePane($scope.currentStar);
+                    }
+                    $scope.currentStar = star;
+                    star.expanded = true;
+                    terminate();
+                    execute(star);
+                }
+            });
+    </script>
+</body>
+</html>
