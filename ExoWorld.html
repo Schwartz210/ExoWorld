@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Orbitron&display=swap" rel="stylesheet">
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
     <script src="datacrunch.js"></script>
     <script src="celestial.js"></script>
@@ -23,13 +24,29 @@
     dl {
         margin: 0;
     }
+    p.loading {
+        font-family: 'Orbitron', sans-serif;
+        font-size: 30px;
+        font-weight: bold;
+    }
+
+    div.loading {
+        text-align: center;
+        padding: 20%;
+    }
 
 </style>
 <body>
+    <div id="loading" class="loading">
+        <p  class="loading">Loading...</p>
+        <div class="spinner-border" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
     <div ng-app="myApp" ng-controller="myCtrl" class="container">
         <div class="pane" ng-repeat="star in content" id={{star.name}}>
-            <button class="btn btn-secondary btn-lg btn-block" ng-if="star.expanded" ng-click="closePane(star)"><span>{{star.name}}</span></button>
-            <button class="btn btn-secondary btn-lg btn-block" ng-if="!star.expanded" ng-click="openPane(star)"><span>{{star.name}}</span></button>
+            <button class="btn btn-secondary btn-lg btn-block" ng-if="star.expanded" ng-click="closePane(star)" style="font-family: Orbitron, sans-serif;"><span>{{star.name}}</span></button>
+            <button class="btn btn-secondary btn-lg btn-block" ng-if="!star.expanded" ng-click="openPane(star)" style="font-family: Orbitron, sans-serif;"><span>{{star.name}}</span></button>
             <div class="container">
                 <dl class="row">
                     <dt class="col-sm-3">Stellar Classification</dt>
@@ -49,6 +66,8 @@
                 $http.get("https://exoplanetarchive.ipac.caltech.edu/cgi-bin/nstedAPI/nph-nstedAPI?table=exoplanets&format=json&select=pl_hostname,pl_name,pl_orbeccen,pl_radj,pl_orbsmax,st_spstr")
                 .then(function(response) {
                     $scope.content = planetsToStars(response.data);
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('loadingSpinner').style.display = 'none';
                 }, function(response) {
                     $scope.content = "Something went wrong";
                 });
