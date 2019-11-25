@@ -14,7 +14,10 @@
     div.pane {
         border-style: solid;
         border: 1px solid black;
-        background-color: #acadad;
+        background-color: #d9d9d9;
+        border-radius: 15px;
+
+        padding: 1%;
     }
     canvas {
         margin-left: auto;
@@ -35,8 +38,21 @@
         padding: 20%;
     }
 
+    p.starName {
+        text-align: center;
+        font-family: 'Orbitron', sans-serif;
+        font-size: 20px;
+        font-weight: bold;
+    }
+
 </style>
 <body>
+    <div class="jumbotron jumbotron-fluid">
+        <div class="container">
+            <h1 style="font-family: 'Orbitron', sans-serif;" class="display-4">ExoWorld</h1>
+            <p class="lead">An Angular JS app to explore exoplanets from NASA's Exoplanet API through animation.</p>
+        </div>
+    </div>
     <div id="loading" class="loading">
         <p  class="loading">Loading...</p>
         <div class="spinner-border" role="status">
@@ -44,26 +60,36 @@
         </div>
     </div>
     <div ng-app="myApp" ng-controller="myCtrl" class="container">
-        <div class="pane" ng-repeat="star in content" id={{star.name}}>
-            <button class="btn btn-secondary btn-lg btn-block" ng-if="star.expanded" ng-click="closePane(star)" style="font-family: Orbitron, sans-serif;"><span>{{star.name}}</span></button>
-            <button class="btn btn-secondary btn-lg btn-block" ng-if="!star.expanded" ng-click="openPane(star)" style="font-family: Orbitron, sans-serif;"><span>{{star.name}}</span></button>
-            <div class="container">
-                <dl class="row">
-                    <dt class="col-sm-3">Stellar Classification</dt>
-                    <dd class="col-sm-9">{{star.spectral[0]}}</dd>
-                </dl>
-                <dl class="row">
-                    <dt class="col-sm-3">Planets</dt>
-                    <dd class="col-sm-9">{{star.celestialObjects.length}}</dd>
-                </dl>
+        <div ng-repeat="star in content">
+            <div class="pane"  id={{star.name}}>
+                <div class="container">
+                    <p class="starName">{{star.name}}</p>
+                    <dl class="row">
+                        <dt class="col-sm-3" style="font-family: 'Orbitron', sans-serif;">Stellar Classification</dt>
+                        <dd class="col-sm-9" style="font-family: 'Orbitron', sans-serif;">{{star.spectral[0]}}</dd>
+                    </dl>
+                    <dl class="row">
+                        <dt class="col-sm-3" style="font-family: 'Orbitron', sans-serif;">Planets</dt>
+                        <dd class="col-sm-9" style="font-family: 'Orbitron', sans-serif;">{{star.celestialObjects.length}}</dd>
+                    </dl>
+                    <dl class="row">
+                        <dt class="col-sm-3" style="font-family: 'Orbitron', sans-serif;">Distance (Light-years)</dt>
+                        <dd class="col-sm-9" style="font-family: 'Orbitron', sans-serif;">{{star.distanceLightYears}}</dd>
+                    </dl>
+                    <button class="btn btn-primary btn-sm" ng-if="star.expanded" ng-click="closePane(star)" style="font-family: Orbitron, sans-serif;"><span>Collapse</span></button>
+                    <button class="btn btn-primary btn-sm" ng-if="!star.expanded" ng-click="openPane(star)" style="font-family: Orbitron, sans-serif;"><span>Animate</span></button>
+                </div>
+                <div ng-if="star.expanded"><br></div>
+                <canvas id="canvas" ng-if="star.expanded" width="1000" height="700"></canvas>
             </div>
-            <canvas id="canvas" ng-if="star.expanded" width="1000" height="700"></canvas>
+            <br><br>
         </div>
+
     </div>
     <script>
         var app = angular.module('myApp', []);
             app.controller('myCtrl', function($scope, $http) {
-                $http.get("https://exoplanetarchive.ipac.caltech.edu/cgi-bin/nstedAPI/nph-nstedAPI?table=exoplanets&format=json&select=pl_hostname,pl_name,pl_orbeccen,pl_radj,pl_orbsmax,st_spstr")
+                $http.get("https://exoplanetarchive.ipac.caltech.edu/cgi-bin/nstedAPI/nph-nstedAPI?table=exoplanets&format=json&select=pl_hostname,pl_name,pl_orbeccen,pl_radj,pl_orbsmax,st_spstr,st_rad,st_dist")
                 .then(function(response) {
                     $scope.content = planetsToStars(response.data);
                     document.getElementById('loading').style.display = 'none';

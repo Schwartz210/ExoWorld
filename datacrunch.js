@@ -1,8 +1,10 @@
 class Star {
-    constructor(name, celestialObjects, spectral){
+    constructor(name, celestialObjects, spectral, radius, distance){
         this.name = name;
         this.celestialObjects = celestialObjects;
         this.spectral = this.setSpectral(spectral);
+        this.radius = radius;
+        this.distanceLightYears = (distance * 3.26156).toFixed(0);
         this.MAX_DISTANCE = 600;
         this.MIN_DISTANCE = 80;
         this.MAX_RADIUS = 10;
@@ -115,7 +117,7 @@ function planetsToStars(data){
             continue;
         }
         if (stars.get(record.pl_hostname) == undefined){
-            stars.set(record.pl_hostname, new Star(record.pl_hostname, [], record.st_spstr));
+            stars.set(record.pl_hostname, new Star(record.pl_hostname, [], record.st_spstr, record.st_rad, record.st_dist));
         }
         temp = new Celestial(record.pl_name, record.pl_radj, [0, 0], record.pl_orbeccen, record.pl_orbsmax, "white", record.pl_hostname);
         stars.get(record.pl_hostname).celestialObjects.push(temp);

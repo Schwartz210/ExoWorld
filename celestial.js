@@ -64,5 +64,5 @@ var deimos = new Celestial('Deimos', 2, [LD, LD], null, null, '#C6AD95', mars);
 var planets = [earth, mars, venus, mercury];
 var moons = [luna, phobos, deimos];
 var celestialObjects = moons.concat(planets);
-var helios = new Star('helios', celestialObjects, 'G');
+var helios = new Star('helios', celestialObjects, 'G', 1, 0);
 var flightPath = true;
