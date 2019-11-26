@@ -1,6 +1,8 @@
 var timer;
 var running = false;
 var currentStar = null;
+var canvasName = null;
+var canvas = null;
 
 function setPlanetaryOrbits(){
     for (var planet of currentStar.celestialObjects){
@@ -19,9 +21,7 @@ function setLunarOrbits(){
 }
 
 function drawBackground(){
-    var canvas = document.getElementById('canvas');
     if (canvas == null){
-        console.log(true);
         clearInterval(timer);
         return;
     }
@@ -74,8 +74,7 @@ function updateCelestialObjectPositions(){
 function drawPlanets(){
     updateCelestialObjectPositions();
     //setLunarOrbits();
-    var c = document.getElementById("canvas");
-    var context = c.getContext("2d");
+    var context = canvas.getContext("2d");
     for (var celestialObject of currentStar.celestialObjects){
         context.beginPath();
         context.fillStyle = celestialObject.color;
@@ -98,7 +97,10 @@ function animate(){
 }
 
 function execute(star){
-    console.log(star);
+    canvas = document.getElementById('canvas-' + star.name);
+    canvas.style.display = "block";
+    canvas.width = 1000;
+    canvas.height = 700;
     running = true;
     currentStar = star;
     currentStar.sizeAdjust();
@@ -110,6 +112,12 @@ function execute(star){
 }
 
 function terminate() {
-  clearInterval(timer);
-  running = false;
+    if (canvas != null){
+        canvas.style.display = "none";
+        canvas.width = 0;
+        canvas.height = 0;
+    }
+    clearInterval(timer);
+    running = false;
+    canvasName = null;
 }

@@ -12,7 +12,6 @@ class Star {
     }
 
     setSpectral(spectral){
-
         var mapping = {
             'O': ['Blue Giant', '#593CCD'],
             'B': ['Blue Giant', '#BBC5F8'],

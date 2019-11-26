@@ -8,6 +8,7 @@
     <script src="datacrunch.js"></script>
     <script src="celestial.js"></script>
     <script src="solar.js"></script>
+    <script src="sunCompare.js"></script>
 </head>
 
 <style>
@@ -51,13 +52,14 @@
         <div class="container">
             <h1 style="font-family: 'Orbitron', sans-serif;" class="display-4">ExoWorld</h1>
             <p class="lead">An Angular JS app to explore exoplanets from NASA's Exoplanet API through animation.</p>
+            <p class="my-4">An exoplanet or extrasolar planet is a planet outside
+                the Solar System. Over 4,000 have been discovered and confirmed.<br>
+                This app is a story of planets and stars. </p>
         </div>
     </div>
     <div id="loading" class="loading">
-        <p  class="loading">Loading...</p>
-        <div class="spinner-border" role="status">
-            <span class="sr-only">Loading...</span>
-        </div>
+        <p class="loading">Loading...</p>
+        <div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div>
     </div>
     <div ng-app="myApp" ng-controller="myCtrl" class="container">
         <div ng-repeat="star in content">
@@ -76,11 +78,23 @@
                         <dt class="col-sm-3" style="font-family: 'Orbitron', sans-serif;">Distance (Light-years)</dt>
                         <dd class="col-sm-9" style="font-family: 'Orbitron', sans-serif;">{{star.distanceLightYears}}</dd>
                     </dl>
-                    <button class="btn btn-primary btn-sm" ng-if="star.expanded" ng-click="closePane(star)" style="font-family: Orbitron, sans-serif;"><span>Collapse</span></button>
-                    <button class="btn btn-primary btn-sm" ng-if="!star.expanded" ng-click="openPane(star)" style="font-family: Orbitron, sans-serif;"><span>Animate</span></button>
+                    <button class="btn btn-primary btn-sm" ng-if="star.expanded && star.status == 0" ng-click="closePane(star)" style="font-family: Orbitron, sans-serif;"><span>Collapse</span></button>
+                    <button class="btn btn-primary btn-sm" ng-if="!star.expanded || star.status != 0" ng-click="openPane(star, 0)" style="font-family: Orbitron, sans-serif;"><span>Animate Orbits</span></button>
+
+                    <button class="btn btn-primary btn-sm" ng-if="star.expanded && star.status == 1" ng-click="closePane(star)" style="font-family: Orbitron, sans-serif;"><span>Collapse</span></button>
+                    <button class="btn btn-primary btn-sm" ng-if="!star.expanded || star.status != 1" ng-click="openPane(star, 1)" style="font-family: Orbitron, sans-serif;"><span>Sun Compare</span></button>
+
                 </div>
                 <div ng-if="star.expanded"><br></div>
-                <canvas id="canvas" ng-if="star.expanded" width="1000" height="700"></canvas>
+                <canvas id={{"canvas-"+star.name}} style="display: none"></canvas>
+                <p ng-if="star.expanded && star.status == 0"><br>Notes:</p>
+                <ul ng-if="star.expanded && star.status == 0">
+                    <li>Planets appear far closer in <b>size and distance</b> to their host star than they are in actuality.</li>
+                    <li>Planets are the correct size relative to other planets in the same system, but are scaled differently from system to system.</li>
+                    <li>Orbital characteristics such as perihelion, aphelion, and eccentricity are correct to current scientific understanding.<br>
+                        However, for simplicity all aphelions are horizontal and all perihelions are verticle, which may or may not match actuality.</li>
+                    <li>Orbital inclination is not currently modeled, as this is a 2D representation.
+                </ul>
             </div>
             <br><br>
         </div>
@@ -93,7 +107,6 @@
                 .then(function(response) {
                     $scope.content = planetsToStars(response.data);
                     document.getElementById('loading').style.display = 'none';
-                    document.getElementById('loadingSpinner').style.display = 'none';
                 }, function(response) {
                     $scope.content = "Something went wrong";
                 });
@@ -102,14 +115,20 @@
                     star.expanded = false;
                     terminate();
                 }
-                $scope.openPane = function(star){
+                $scope.openPane = function(star, status){
                     if ($scope.currentStar != null){
                         $scope.closePane($scope.currentStar);
                     }
                     $scope.currentStar = star;
                     star.expanded = true;
+                    star.status = status;
                     terminate();
-                    execute(star);
+                    if (status == 0){
+                        execute(star);
+                    } else if (status == 1){
+                        sunCompareExecute(star);
+                    }
+
                 }
             });
     </script>
