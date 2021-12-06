@@ -110,8 +110,9 @@
     <script>
         var app = angular.module('myApp', []);
             app.controller('myCtrl', function($scope, $http) {
-                $http.get("https://exoplanetarchive.ipac.caltech.edu/cgi-bin/nstedAPI/nph-nstedAPI?table=exoplanets&format=json&select=pl_hostname,pl_name,pl_orbeccen,pl_radj,pl_orbsmax,st_spstr,st_rad,st_dist")
+                $http.get("https://exoplanetarchive.ipac.caltech.edu/TAP/sync?query=select+hostname,pl_name,pl_orbeccen,pl_radj,pl_orbsmax,st_spectype,st_rad,sy_dist+from+ps")
                 .then(function(response) {
+                    console.log("test");
                     $scope.content = planetsToStars(response.data);
                     document.getElementById('loading').style.display = 'none';
                 }, function(response) {
